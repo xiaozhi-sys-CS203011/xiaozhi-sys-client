@@ -1,8 +1,9 @@
-from urllib.parse import urlparse
-from .websocket_proxy import WebSocketProxy
-from ..config import ConfigManager
 import asyncio
 from logging import getLogger
+from urllib.parse import urlparse
+
+from app.config.config_loader import ConfigLoader
+from app.proxy.websocket_proxy import WebSocketProxy
 
 logger = getLogger(__name__)
 
@@ -10,7 +11,7 @@ logger = getLogger(__name__)
 def run_proxy():
     """在单独的进程中运行代理服务器"""
     try:
-        configuration = ConfigManager()
+        configuration = ConfigLoader()
         ws_proxy_url = configuration.get_str("WS_PROXY_URL")
         proxy = WebSocketProxy(
             device_id=configuration.get_str("DEVICE_ID"),

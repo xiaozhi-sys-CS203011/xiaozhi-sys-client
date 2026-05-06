@@ -1,10 +1,12 @@
-import os
-import logging
-import sys
 import io
-from colorlog import ColoredFormatter
+import logging
+import os
+import sys
+import time
 from logging.handlers import RotatingFileHandler
-from ..constant.file import BASE_DIR
+
+from colorlog import ColoredFormatter
+from .constant import BASE_DIR
 
 
 def setup_logging():
@@ -33,12 +35,12 @@ def setup_logging():
     log_dir = os.path.join(BASE_DIR, "logs")
     os.makedirs(log_dir, exist_ok=True)
 
-    # 日志文件路径
-    log_file = os.path.join(log_dir, "app.log")
+    # 日志文件路径（按日期）
+    log_file = os.path.join(log_dir, f"app_debug_{time.strftime('%Y-%m-%d')}.log")
 
     # 创建根日志记录器
     root_logger = logging.getLogger()
-    root_logger.setLevel(logging.INFO)
+    root_logger.setLevel(logging.DEBUG)
 
     # 清除已有的处理器（避免重复添加）
     if root_logger.handlers:
@@ -52,7 +54,7 @@ def setup_logging():
     file_handler = RotatingFileHandler(
         log_file, maxBytes=10 * 1024 * 1024, backupCount=5, encoding="utf-8"
     )
-    file_handler.setLevel(logging.INFO)
+    file_handler.setLevel(logging.DEBUG)
     setattr(file_handler, "suffix", "%Y-%m-%d.log")
 
     # 创建格式化器

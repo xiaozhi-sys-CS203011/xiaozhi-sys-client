@@ -33,7 +33,6 @@ coverage
 
 # Environment variables
 .env
-config/
 
 # Python
 **/__pycache__/

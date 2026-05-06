@@ -1,0 +1,9 @@
+{
+    "WS_URL": "wss://api.tenclass.net/xiaozhi/v1/",
+    "WS_PROXY_URL": "ws://0.0.0.0:5000",
+    "OTA_VERSION_URL": "https://api.tenclass.net/xiaozhi/ota/",
+    "TOKEN_ENABLE": true,
+    "TOKEN": "test_token",
+    "CLIENT_ID": "9dd3f4f8-5e36-44f6-b9ff-e523df7b774d",
+    "DEVICE_ID": "d0:39:57:4b:59:8c"
+}

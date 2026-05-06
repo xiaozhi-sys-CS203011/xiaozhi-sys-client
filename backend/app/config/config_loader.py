@@ -1,18 +1,19 @@
-import os
 import json
-from .utils.device import get_client_id, get_mac_address
-from .constant.file import BASE_DIR
+import os
 from logging import getLogger
+
+from app.config.constant import BASE_DIR
+from app.utils.device import get_client_id, get_mac_address
 
 logger = getLogger(__name__)
 
 
-class ConfigManager:
+class ConfigLoader:
     _instance = None
 
     def __new__(cls):
         if cls._instance is None:
-            cls._instance = super(ConfigManager, cls).__new__(cls)
+            cls._instance = super(ConfigLoader, cls).__new__(cls)
         return cls._instance
 
     def __init__(self):
@@ -28,11 +29,10 @@ class ConfigManager:
 
     def _init_config(self) -> None:
         """确保配置文件存在，否则创建并使用默认配置"""
-        config_file_path = os.path.join(BASE_DIR, "config", "config.json")
+        config_file_path = os.path.join(BASE_DIR, "config.json")
 
         if not os.path.exists(config_file_path):
             logger.info("本地配置文件不存在，正在创建默认配置: ", config_file_path)
-            os.makedirs(os.path.join(BASE_DIR, "config"), exist_ok=True)
             self._default_config["CLIENT_ID"] = get_client_id()
             self._default_config["DEVICE_ID"] = get_mac_address()
             with open(config_file_path, "w") as f:
