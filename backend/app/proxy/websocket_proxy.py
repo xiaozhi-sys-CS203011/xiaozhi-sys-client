@@ -1,12 +1,14 @@
 import asyncio
-import signal
-import websockets
 import json
+import signal
+from logging import getLogger
+
 import numpy as np
 import requests
-from ..utils.device import get_mac_address, get_local_ip
-from ..utils.audio import pcm_to_opus, decoder, AudioProcessor
-from logging import getLogger
+import websockets
+
+from ..utils.audio import AudioProcessor, decoder, pcm_to_opus
+from ..utils.device import get_local_ip, get_mac_address
 
 logger = getLogger(__name__)
 
@@ -53,7 +55,11 @@ class WebSocketProxy:
     def _update_ota_address(self):
         MAC_ADDR = get_mac_address()
 
-        headers = {"Device-Id": MAC_ADDR, "Content-Type": "application/json"}
+        headers = {
+            "Client-Id": self.client_id,
+            "Device-Id": MAC_ADDR,
+            "Content-Type": "application/json",
+        }
 
         # 构建设备信息 payload
         payload = {
@@ -80,6 +86,8 @@ class WebSocketProxy:
         }
 
         try:
+            logger.info("正在请求 OTA 服务器 ({})...".format(self.ota_version_url))
+
             # 发送请求到 OTA 服务器
             response = requests.post(
                 self.ota_version_url,
@@ -104,12 +112,9 @@ class WebSocketProxy:
                 )
                 return response_data["mqtt"]
             else:
-                logger.error(
-                    f"OTA 服务器返回的数据无效: 没有 MQTT 信息: {response_data}"
-                )
-                raise ValueError(
-                    "OTA 服务器返回的数据无效，请检查服务器状态或 MAC 地址"
-                )
+                logger.warning(f"没有 MQTT 信息: {response_data}")
+            if response_data.get("success") == "false":
+                raise requests.RequestException
 
         except requests.Timeout:
             logger.error("OTA 请求超时")
